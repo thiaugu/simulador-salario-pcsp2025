@@ -44,6 +44,7 @@
         const HelpCircle = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>);
         const Utensils = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" /><path d="M7 2v20" /><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z" /></svg>);
         const AlertTriangle = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>);
+        const InstagramIcon = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>);
 
         // --- START OF YOUR REACT CODE ---
         // (Copied and pasted directly from your submission, with no logic changes)
@@ -327,6 +328,20 @@
           </div>
         );
 
+        // --- NEW FLOATING BUTTON COMPONENT ---
+        const FloatingAuthorButton = () => (
+            <a
+              href="https://www.instagram.com/provaspcsp2023/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fixed bottom-6 right-6 z-50 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 text-white p-3 rounded-full shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white"
+              title="Desenvolvido por @provaspcsp2023. Clique para dúvidas ou sugestões."
+            >
+              <InstagramIcon className="w-6 h-6" />
+            </a>
+        );
+
+
         // --- MAIN APP COMPONENT ---
         function App() {
           // --- STATE MANAGEMENT ---
@@ -400,7 +415,7 @@
               iamspeDiscount += (inputs.beneficiariosUnder59 * grossSalary * iamspeRates.beneficiario.under59);
               iamspeDiscount += (inputs.beneficiariosOver59 * grossSalary * iamspeRates.beneficiario.over59);
               iamspeDiscount += (inputs.agregadosUnder59 * grossSalary * iamspeRates.agregado.under59);
-              iamspeDiscount += (inputs.agregadosOver59 * grossSalary * iamspeRates.agregado.over59);
+              iamspeDiscount += (inputs.agregadosOver59 * grossSalar * iamspeRates.agregado.over59);
             }
             
             const spprevDiscount = calculateSpprev(grossSalary);
@@ -599,6 +614,7 @@
                     </div>
                   </div>
                 </div>
+                <FloatingAuthorButton />
               </div>
             </div>
           );
