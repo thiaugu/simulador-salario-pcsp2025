@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador de Remuneração - PCSP</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React Libraries -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
+    <!-- Babel to transpile JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* Custom font for better readability */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Minor style adjustments */
+        .focus\:ring-cyan-600:focus {
+            --tw-ring-color: #0891b2;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- DEPENDENCIES & SETUP (React Hooks, etc.) ---
+        const { useState, useEffect, useMemo } = React;
+
+        // --- SVG ICONS (replacement for lucide-react) ---
+        const Briefcase = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>);
+        const Clock = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>);
+        const Users = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>);
+        const Shield = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>);
+        const Award = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 17 17 23 15.79 13.88" /></svg>);
+        const FileText = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><line x1="10" y1="9" x2="8" y2="9" /></svg>);
+        const HelpCircle = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>);
+        const Utensils = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" /><path d="M7 2v20" /><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z" /></svg>);
+        const AlertTriangle = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>);
+
+        // --- START OF YOUR REACT CODE ---
+        // (Copied and pasted directly from your submission, with no logic changes)
+
+        // DATA (Updated with new Insalubridade options)
+        const salaryData = {
+          "Delegado de Polícia": { "3ª Classe": 7894.94, "2ª Classe": 8412.14, "1ª Classe": 8967.82, "Classe Especial": 9499.12 },
+          "Médico Legista": { "3ª Classe": 6801.06, "2ª Classe": 7245.58, "1ª Classe": 7723.00, "Classe Especial": 8178.62 },
+          "Perito Criminal": { "3ª Classe": 6801.06, "2ª Classe": 7245.58, "1ª Classe": 7723.00, "Classe Especial": 8178.62 },
+          "Escrivão de Polícia": { "3ª Classe": 3086.83, "2ª Classe": 3306.60, "1ª Classe": 3543.17, "Classe Especial": 3902.29 },
+          "Investigador de Polícia": { "3ª Classe": 3086.83, "2ª Classe": 3306.60, "1ª Classe": 3543.17, "Classe Especial": 3902.29 },
+        };
+        const constants = { adpjCoefficient: 0.265, irpfDeductionPerDependent: 189.59, ufesp: 37.02 };
+        const alimentacaoRules = { valor12h: 2 * constants.ufesp, valor8h: 1 * constants.ufesp, limite12h: 15, limite8h: 30, limiteMensalTotal: 15 * (2 * constants.ufesp) };
+        const insalubridadeValues = { "Máximo": 785.67, "Mínimo": 196.38, "Nenhum": 0 };
+        const activityToLevelMap = { 
+            "Não se aplica": "Nenhum", 
+            "Atividade Operacional": "Máximo", 
+            "Atividade Administrativa (Readaptado)": "Mínimo" 
+        };
+        const activityOptions = [
+            "Não se aplica",
+            "Atividade Operacional", 
+            "Atividade Administrativa (Readaptado)"
+        ];
+        const iamspeRates = { titular: { under59: 0.02, over59: 0.03 }, beneficiario: { under59: 0.005, over59: 0.01 }, agregado: { under59: 0.02, over59: 0.03 } };
+
+        // HELPER FUNCTIONS
+        const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+        const calculateSpprev = (base) => {
+          const limits = [1518.00, 4022.46, 8157.41], rates = [0.11, 0.12, 0.14, 0.16];
+          if (base <= limits[0]) return base * rates[0];
+          if (base <= limits[1]) return (limits[0] * rates[0]) + ((base - limits[0]) * rates[1]);
+          if (base <= limits[2]) return (limits[0] * rates[0]) + ((limits[1] - limits[0]) * rates[1]) + ((base - limits[1]) * rates[2]);
+          return (limits[0] * rates[0]) + ((limits[1] - limits[0]) * rates[1]) + ((limits[2] - limits[1]) * rates[2]) + ((base - limits[2]) * rates[3]);
+        };
+        const calculateIrpf = (base) => {
+          const limits = [2259.20, 2826.65, 3751.05, 4664.68], rates = [0.075, 0.15, 0.225, 0.275], deductions = [169.44, 381.44, 662.77, 896.00];
+          let tax = 0;
+          if (base > limits[3]) tax = (base * rates[3]) - deductions[3];
+          else if (base > limits[2]) tax = (base * rates[2]) - deductions[2];
+          else if (base > limits[1]) tax = (base * rates[1]) - deductions[1];
+          else if (base > limits[0]) tax = (base * rates[0]) - deductions[0];
+          return tax > 0 ? tax : 0;
+        };
+
+        // --- REUSABLE UI COMPONENTS ---
+        const InputSection = ({ icon: Icon, title, children }) => (
+          <div className="p-4 bg-gray-900/50 rounded-lg ring-1 ring-gray-700/50">
+            <div className="flex items-center gap-3 mb-4">
+              <Icon className="w-6 h-6 text-cyan-400" />
+              <h3 className="font-semibold text-lg text-cyan-300">{title}</h3>
+            </div>
+            <div className="space-y-4">{children}</div>
+          </div>
+        );
+
+        const Select = ({ label, value, onChange, options, helpText }) => (
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+            <select value={value} onChange={onChange} className="w-full bg-gray-700 border-gray-600 rounded-md py-2 px-3 text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500">
+              {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+            </select>
+            {helpText && <p className="text-xs text-gray-400 mt-1">{helpText}</p>}
+          </div>
+        );
+
+        const NumberInput = ({ label, value, onChange, helpText, min = 0, max }) => (
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+            <input type="number" value={value} onChange={e => {
+                let val = parseInt(e.target.value) || 0;
+                val = Math.max(min, val);
+                if (max !== undefined) val = Math.min(max, val);
+                onChange(val);
+            }} className="w-full bg-gray-700 border-gray-600 rounded-md py-2 px-3 text-white" />
+            {helpText && <p className="text-xs text-gray-400 mt-1">{helpText}</p>}
+          </div>
+        );
+
+        const Checkbox = ({ label, checked, onChange, helpText }) => (
+          <div className="flex items-start">
+            <input type="checkbox" id={label} checked={checked} onChange={e => onChange(e.target.checked)} className="h-4 w-4 rounded bg-gray-700 text-cyan-500 mt-1 focus:ring-cyan-600" />
+            <div className="ml-3">
+              <label htmlFor={label} className="text-sm text-gray-200">{label}</label>
+              {helpText && <p className="text-xs text-gray-400">{helpText}</p>}
+            </div>
+          </div>
+        );
+
+        const ToggleSwitch = ({ label, enabled, setEnabled, helpText }) => (
+          <div className="flex items-center justify-between">
+            <div>
+                <label className="font-medium text-gray-200">{label}</label>
+                {helpText && <p className="text-xs text-gray-400 mt-1">{helpText}</p>}
+            </div>
+            <button onClick={() => setEnabled(!enabled)} className={`${enabled ? 'bg-cyan-500' : 'bg-gray-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}>
+              <span className={`${enabled ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
+            </button>
+          </div>
+        );
+
+        const ResultRow = ({ label, value, helpText, isTotal = false, type = 'neutral', children }) => {
+          const colorClasses = { neutral: 'text-white', positive: 'text-green-300', negative: 'text-red-300' };
+          return(
+            <div className={`py-3 ${isTotal ? 'border-t border-gray-600 mt-2' : ''}`}>
+              <div className={`flex justify-between items-center ${isTotal ? 'text-base font-bold' : 'text-sm'}`}>
+                <span>{label}</span>
+                <span className={`font-mono ${colorClasses[type]}`}>{value}</span>
+              </div>
+              {helpText && <p className="text-xs text-gray-400 mt-1">{helpText}</p>}
+              {children}
+            </div>
+          );
+        };
+        
+        // --- TOOLTIP COMPONENTS ---
+        const QuinquenioExplanationTooltip = () => (
+            <div className="absolute top-full left-0 mt-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <div className="space-y-3">
+                    <h4 className="font-bold text-sm text-cyan-400">Quinquênio (Adicional por Tempo de Serviço)</h4>
+                    <p>É um acréscimo de 5% na remuneração a cada 5 anos de serviço público efetivo. Ele é cumulativo, ou seja, com 10 anos de serviço você terá 2 quinquênios (10%), com 15 anos terá 3 (15%), e assim por diante.</p>
+                </div>
+            </div>
+        );
+
+        const SextaParteExplanationTooltip = () => (
+            <div className="absolute top-full left-0 mt-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <div className="space-y-3">
+                    <h4 className="font-bold text-sm text-cyan-400">Sexta-Parte</h4>
+                    <p>Benefício pago ao servidor que completa 20 anos de serviço público efetivo.</p>
+                    <p>Corresponde a 1/6 (um sexto), ou aproximadamente 16,67%, dos vencimentos. Diferente do quinquênio, você só recebe a sexta-parte uma vez, ao atingir os 20 anos.</p>
+                </div>
+            </div>
+        );
+
+        const AlimentacaoRulesTooltip = () => (
+            <div className="absolute top-full left-0 mt-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <div className="space-y-3">
+                    <h4 className="font-bold text-sm text-cyan-400">Cálculo da Ajuda de Custo (Alimentação)</h4>
+                    <p>Funciona como uma indenização por plantão trabalhado:</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                        <li><strong className="text-white">Plantão de 12h ou mais:</strong> Recebe 100% do valor de referência.</li>
+                        <li><strong className="text-white">Plantão de 8 a 12h:</strong> Recebe 50% do valor de referência.</li>
+                    </ul>
+                    <p>O valor total mensal não pode ultrapassar o teto de 15 plantões de 12h.</p>
+                </div>
+            </div>
+        );
+
+        const AlimentacaoValuesTooltip = () => (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <div className="space-y-3">
+                    <h4 className="font-bold text-sm text-cyan-400">Valores da Ajuda de Custo</h4>
+                    <p><strong className="text-white">Valor de Referência:</strong> 2,0 × {formatCurrency(constants.ufesp)} (UFESP) = <strong className="text-white">{formatCurrency(alimentacaoRules.valor12h)}</strong></p>
+                    <ul className="list-none space-y-1 text-gray-400">
+                        <li className="flex justify-between"><strong className="text-white">Plantão de 12h ou mais:</strong><span>{formatCurrency(alimentacaoRules.valor12h)}</span></li>
+                        <li className="flex justify-between"><strong className="text-white">Plantão de 8 a 12h:</strong><span>{formatCurrency(alimentacaoRules.valor8h)}</span></li>
+                    </ul>
+                    <p>Este é um valor indenizatório, ou seja, não se incorpora ao salário e não sofre descontos de SPPREV ou IRPF.</p>
+                </div>
+            </div>
+        );
+
+        const InsalubridadeValueTooltip = () => (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <div className="space-y-3">
+                    <h4 className="font-bold text-sm text-cyan-400">Valores do Adicional de Insalubridade</h4>
+                    <p className="text-gray-400">Fonte: Comunicado Conjunto CAF/CRHE-1, de 01/03/2021.</p>
+                    <p>Os valores são fixos, correspondendo ao grau de risco da atividade:</p>
+                    <ul className="list-none space-y-1 text-gray-400">
+                        <li className="flex justify-between"><strong className="text-white">Grau Máximo:</strong><span>{formatCurrency(insalubridadeValues["Máximo"])}</span></li>
+                        <li className="flex justify-between"><strong className="text-white">Grau Mínimo:</strong><span>{formatCurrency(insalubridadeValues["Mínimo"])}</span></li>
+                    </ul>
+                </div>
+            </div>
+        );
+
+        const InsalubridadePortariaTooltip = () => (
+            <div className="absolute top-full left-0 mt-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <p>
+                    Classificação conforme a Portaria DPME 3/2025. 
+                    <a 
+                        href="https://doe.sp.gov.br/executivo/secretaria-de-gestao-e-governo-digital/diretoria-de-pericias-medicas-do-estado-de-sao-paulo-portaria-n-03-de-24-de-marco-de-2025-202503241128511214965687" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-cyan-400 hover:underline ml-1"
+                    >
+                        Acesse aqui
+                    </a>
+                </p>
+            </div>
+        );
+
+        const AdpjExplanationTooltip = () => (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <div className="space-y-3">
+                    <h4 className="font-bold text-sm text-cyan-400">Adicional por Direção da Atividade de Polícia Judiciária (ADPJ)</h4>
+                    <p>Gratificação exclusiva para Delegados de Polícia, remunerando a natureza de comando e gestão do cargo.</p>
+                    <div>
+                        <h5 className="font-bold text-white">Cálculo</h5>
+                         <p className="font-mono text-center bg-gray-800 p-2 my-1 rounded text-cyan-300 text-[11px]">(Salário Base + RETP) * 26,5%</p>
+                    </div>
+                    <p>É uma vantagem específica da carreira, não sendo estendida aos demais cargos.</p>
+                </div>
+            </div>
+        );
+
+        const IamspeExplanationTooltip = () => (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <div className="space-y-3">
+                    <h4 className="font-bold text-sm text-cyan-400">Cálculo da Contribuição IAMSPE</h4>
+                    <p>O cálculo é feito sobre a remuneração bruta total, com alíquotas variando por faixa etária (Lei nº 17.293/2020):</p>
+                    <ul className="list-none space-y-2 text-gray-400">
+                        <li><strong className="text-white block">Titular:</strong><span className="flex justify-between pl-2"><span>&lt; 59 anos:</span> <span>2%</span></span><span className="flex justify-between pl-2"><span>59+ anos:</span> <span>3%</span></span></li>
+                        <li><strong className="text-white block">Beneficiários (cônjuge/filhos):</strong><span className="flex justify-between pl-2"><span>&lt; 59 anos:</span> <span>0,5%</span></span><span className="flex justify-between pl-2"><span>59+ anos:</span> <span>1%</span></span></li>
+                        <li><strong className="text-white block">Agregados (pais/padrastos):</strong><span className="flex justify-between pl-2"><span>&lt; 59 anos:</span> <span>2%</span></span><span className="flex justify-between pl-2"><span>59+ anos:</span> <span>3%</span></span></li>
+                    </ul>
+                    <p>O desconto final é a soma da contribuição do titular com a de cada dependente.</p>
+                </div>
+            </div>
+        );
+
+        const SpprevExplanationTooltip = () => (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                <div className="space-y-3">
+                    <h4 className="font-bold text-sm text-cyan-400">Cálculo da Contribuição SPPREV</h4>
+                    <p>A contribuição é progressiva sobre o Total Bruto, aplicada em faixas (valores de 2025):</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-400">
+                        <li><strong className="text-white">1ª Faixa:</strong> 11% sobre a parte do salário até R$ 1.518,00.</li>
+                        <li><strong className="text-white">2ª Faixa:</strong> 12% sobre a parte de R$ 1.518,01 até R$ 4.022,46.</li>
+                        <li><strong className="text-white">3ª Faixa:</strong> 14% sobre a parte de R$ 4.022,47 até R$ 8.157,41.</li>
+                        <li><strong className="text-white">4ª Faixa:</strong> 16% sobre a parte que ultrapassa R$ 8.157,41.</li>
+                    </ul>
+                    <p>O desconto final é a soma dos valores calculados em cada faixa.</p>
+                </div>
+            </div>
+        );
+
+        const IrpfExplanationTooltip = () => (
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+            <div className="space-y-3">
+              <h4 className="font-bold text-sm text-cyan-400">Cálculo do IRPF</h4>
+              <p>O desconto não incide sobre o salário bruto total, mas sobre uma base de cálculo específica, em 3 etapas:</p>
+              <div>
+                <h5 className="font-bold text-white">1. Base de Cálculo</h5>
+                <p className="font-mono text-center bg-gray-800 p-2 my-1 rounded text-cyan-300 text-[11px]">Total Bruto - SPPREV - IAMSPE - (Dependentes × R$ 189,59)</p>
+              </div>
+              <div>
+                <h5 className="font-bold text-white">2. Tabela Progressiva</h5>
+                <table className="w-full text-left my-1 text-[10px] sm:text-[11px]">
+                  <thead className="bg-gray-800/70"><tr><th className="p-1.5">Base (R$)</th><th className="p-1.5">Alíquota</th><th className="p-1.5">Dedução (R$)</th></tr></thead>
+                  <tbody className="bg-gray-900/50">
+                    <tr><td className="p-1.5">Até 2.259,20</td><td className="p-1.5">Isento</td><td className="p-1.5">0,00</td></tr>
+                    <tr><td className="p-1.5">a 2.826,65</td><td className="p-1.5">7,5%</td><td className="p-1.5">169,44</td></tr>
+                    <tr><td className="p-1.5">a 3.751,05</td><td className="p-1.5">15%</td><td className="p-1.5">381,44</td></tr>
+                    <tr><td className="p-1.5">a 4.664,68</td><td className="p-1.5">22,5%</td><td className="p-1.5">662,77</td></tr>
+                    <tr><td className="p-1.5">&gt; 4.664,68</td><td className="p-1.5">27,5%</td><td className="p-1.5">896,00</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <h5 className="font-bold text-white">3. Fórmula Final</h5>
+                <p className="font-mono text-center bg-gray-800 p-2 my-1 rounded text-cyan-300 text-[11px]">(Base de Cálculo × Alíquota) - Parcela a Deduzir</p>
+              </div>
+            </div>
+          </div>
+        );
+
+        const RetpExplanationTooltip = () => (
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+            <div className="space-y-3">
+              <h4 className="font-bold text-sm text-cyan-400">Regime Especial de Trabalho Policial (RETP)</h4>
+              <p className="text-gray-400">Lei n.º 10.291, de 26 de novembro de 1968:</p>
+              <blockquote className="border-l-2 border-cyan-500/50 pl-3 text-gray-300 space-y-2">
+                <p><strong className="text-white">Artigo 1º</strong> - Fica instituído, na Secretaria da Segurança Pública, o Regime Especial de Trabalho Policial...</p>
+                <p><strong className="text-white">Artigo 3º</strong> - ...ficam atribuídas... gratificações na seguinte conformidade:</p>
+                <p className="pl-4"><strong className="text-white">II</strong> - 100% (cem por cento) sobre as respectivas referências de vencimentos...</p>
+              </blockquote>
+            </div>
+          </div>
+        );
+
+        // --- MAIN APP COMPONENT ---
+        function App() {
+          // --- STATE MANAGEMENT ---
+          const [inputs, setInputs] = useState({
+            selectedCareer: "Delegado de Polícia", selectedClass: "3ª Classe",
+            quinquenios: 0, hasSextaParte: false, calculationBase: 'admin',
+            activityType: 'Não se aplica',
+            hasAbono: false, irpfDependents: 0,
+            includeIamspeDependents: false, isTitularOver59: false,
+            beneficiariosUnder59: 0, beneficiariosOver59: 0, agregadosUnder59: 0, agregadosOver59: 0,
+            showTemporalBenefits: false, showAlimentacao: false,
+            plantao12h: 0, plantao8h: 0,
+          });
+          const [showIrpfHelp, setShowIrpfHelp] = useState(false);
+          const [showRetpHelp, setShowRetpHelp] = useState(false);
+          const [showSpprevHelp, setShowSpprevHelp] = useState(false);
+          const [showIamspeHelp, setShowIamspeHelp] = useState(false);
+          const [showAdpjHelp, setShowAdpjHelp] = useState(false);
+          const [showInsalubridadePortariaHelp, setShowInsalubridadePortariaHelp] = useState(false);
+          const [showInsalubridadeValueHelp, setShowInsalubridadeValueHelp] = useState(false);
+          const [showAlimentacaoRulesHelp, setShowAlimentacaoRulesHelp] = useState(false);
+          const [showAlimentacaoValuesHelp, setShowAlimentacaoValuesHelp] = useState(false);
+          const [showQuinquenioHelp, setShowQuinquenioHelp] = useState(false);
+          const [showSextaParteHelp, setShowSextaParteHelp] = useState(false);
+
+          // --- DERIVED STATE & MEMOIZED VALUES ---
+          const careerOptions = useMemo(() => Object.keys(salaryData).map(c => ({ value: c, label: c })), []);
+          const classOptions = useMemo(() => {
+            const career = inputs.selectedCareer;
+            if (!career || !salaryData[career]) return [];
+            return Object.keys(salaryData[career]).map(c => ({ value: c, label: c }));
+          }, [inputs.selectedCareer]);
+
+          // --- EFFECT FOR AUTO-UPDATING SEXTA-PARTE ---
+          useEffect(() => {
+            if (inputs.quinquenios >= 4) {
+              setInputs(prev => ({ ...prev, hasSextaParte: true }));
+            } else {
+              setInputs(prev => ({ ...prev, hasSextaParte: false }));
+            }
+          }, [inputs.quinquenios]);
+
+          // --- HANDLERS ---
+          const handleInputChange = (field, value) => setInputs(prev => ({ ...prev, [field]: value }));
+          const handleCareerChange = (e) => {
+            const newCareer = e.target.value;
+            setInputs(prev => ({ ...prev, selectedCareer: newCareer, selectedClass: Object.keys(salaryData[newCareer])[0] }));
+          };
+
+          // --- CALCULATION LOGIC ---
+          const results = useMemo(() => {
+            const baseSalary = salaryData[inputs.selectedCareer]?.[inputs.selectedClass] || 0;
+            const retp = baseSalary;
+            let quinquenioValue = 0, sextaParteValue = 0;
+            if (inputs.showTemporalBenefits) {
+              const temporalBase = inputs.calculationBase === 'judicial' ? (baseSalary + retp) : baseSalary;
+              quinquenioValue = (temporalBase * 0.05) * inputs.quinquenios;
+              if (inputs.hasSextaParte) {
+                const sextaParteBase = inputs.calculationBase === 'judicial' ? (baseSalary + retp + quinquenioValue) : (baseSalary + quinquenioValue);
+                sextaParteValue = sextaParteBase / 6;
+              }
+            }
+            const adpjValue = inputs.selectedCareer === "Delegado de Polícia" ? (baseSalary + retp) * constants.adpjCoefficient : 0;
+            const insalubridadeLevel = activityToLevelMap[inputs.activityType];
+            const insalubridadeValue = insalubridadeValues[insalubridadeLevel] || 0;
+            const grossSalary = baseSalary + retp + quinquenioValue + sextaParteValue + adpjValue + insalubridadeValue;
+            
+            const titularRate = inputs.isTitularOver59 ? iamspeRates.titular.over59 : iamspeRates.titular.under59;
+            let iamspeDiscount = grossSalary * titularRate;
+            if (inputs.includeIamspeDependents) {
+              iamspeDiscount += (inputs.beneficiariosUnder59 * grossSalary * iamspeRates.beneficiario.under59);
+              iamspeDiscount += (inputs.beneficiariosOver59 * grossSalary * iamspeRates.beneficiario.over59);
+              iamspeDiscount += (inputs.agregadosUnder59 * grossSalary * iamspeRates.agregado.under59);
+              iamspeDiscount += (inputs.agregadosOver59 * grossSalary * iamspeRates.agregado.over59);
+            }
+            
+            const spprevDiscount = calculateSpprev(grossSalary);
+            const irpfBase = grossSalary - spprevDiscount - (inputs.irpfDependents * constants.irpfDeductionPerDependent) - iamspeDiscount;
+            const irpfDiscount = calculateIrpf(irpfBase);
+            const totalDiscounts = spprevDiscount + irpfDiscount + iamspeDiscount;
+            
+            const abonoPermanenciaValue = inputs.hasAbono ? spprevDiscount : 0;
+            let alimentacaoValue = 0;
+            if (inputs.showAlimentacao) {
+              const num12h = Math.min(inputs.plantao12h, alimentacaoRules.limite12h);
+              const num8h = Math.min(inputs.plantao8h, alimentacaoRules.limite8h);
+              const totalAlimentacao = (num12h * alimentacaoRules.valor12h) + (num8h * alimentacaoRules.valor8h);
+              alimentacaoValue = Math.min(totalAlimentacao, alimentacaoRules.limiteMensalTotal);
+            }
+            
+            const netSalary = grossSalary - totalDiscounts + abonoPermanenciaValue + alimentacaoValue;
+            return { baseSalary, retp, quinquenioValue, sextaParteValue, adpjValue, insalubridadeValue, insalubridadeLevel, grossSalary, spprevDiscount, irpfDiscount, iamspeDiscount, totalDiscounts, abonoPermanenciaValue, alimentacaoValue, netSalary };
+          }, [inputs]);
+
+          return (
+            <div className="bg-gray-900 text-white min-h-screen font-sans p-4 sm:p-8 flex justify-center">
+              <div className="w-full max-w-6xl">
+                <div className="text-center mb-8">
+                  <h1 className="text-4xl font-bold text-cyan-400">Simulador de Remuneração</h1>
+                  <p className="text-lg text-gray-400 mt-1">Polícia Civil de São Paulo</p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* --- INPUTS COLUMN --- */}
+                  <div className="bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 flex flex-col space-y-6">
+                    <InputSection icon={Briefcase} title="Cargo e Classe">
+                      <Select label="Cargo" value={inputs.selectedCareer} onChange={handleCareerChange} options={careerOptions} />
+                      <Select label="Classe" value={inputs.selectedClass} onChange={(e) => handleInputChange('selectedClass', e.target.value)} options={classOptions} />
+                    </InputSection>
+
+                    <InputSection icon={Clock} title="Vantagens Temporais">
+                        <ToggleSwitch label="Incluir no Cálculo" enabled={inputs.showTemporalBenefits} setEnabled={(v) => handleInputChange('showTemporalBenefits', v)} helpText="Ative para adicionar Quinquênio e Sexta-Parte."/>
+                        {inputs.showTemporalBenefits && (
+                            <div className="space-y-4 mt-4 pt-4 border-t border-gray-700">
+                                <div className="relative" onMouseEnter={() => setShowQuinquenioHelp(true)} onMouseLeave={() => setShowQuinquenioHelp(false)}>
+                                    <NumberInput 
+                                        label={
+                                            <div className="flex items-center gap-2">
+                                                <span>Nº de Quinquênios</span>
+                                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                                            </div>
+                                        } 
+                                        value={inputs.quinquenios} 
+                                        onChange={(v) => handleInputChange('quinquenios', v)}
+                                    />
+                                    {showQuinquenioHelp && <QuinquenioExplanationTooltip />}
+                                </div>
+                                <div className="relative" onMouseEnter={() => setShowSextaParteHelp(true)} onMouseLeave={() => setShowSextaParteHelp(false)}>
+                                    <Checkbox 
+                                        label={
+                                            <div className="flex items-center gap-2">
+                                                <span>Possui Sexta-Parte</span>
+                                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                                            </div>
+                                        } 
+                                        checked={inputs.hasSextaParte} 
+                                        onChange={(v) => handleInputChange('hasSextaParte', v)}
+                                    />
+                                    {showSextaParteHelp && <SextaParteExplanationTooltip />}
+                                </div>
+                            </div>
+                        )}
+                    </InputSection>
+
+                    <InputSection icon={Award} title="Outras Vantagens">
+                        <div>
+                            <div 
+                                className="flex items-center gap-2 relative w-fit" 
+                                onMouseEnter={() => setShowInsalubridadePortariaHelp(true)} 
+                                onMouseLeave={() => setShowInsalubridadePortariaHelp(false)}
+                            >
+                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    Tipo de Atividade (Insalubridade)
+                                </label>
+                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                                {showInsalubridadePortariaHelp && <InsalubridadePortariaTooltip />}
+                            </div>
+                            <Select value={inputs.activityType} onChange={(e) => handleInputChange('activityType', e.target.value)} options={activityOptions.map(o => ({value: o, label: o}))} helpText="Define o adicional de insalubridade." />
+                        </div>
+                        <Checkbox label="Abono de Permanência" checked={inputs.hasAbono} onChange={(v) => handleInputChange('hasAbono', v)} helpText="Para quem já pode se aposentar mas continua na ativa." />
+                    </InputSection>
+                    
+                    <InputSection icon={Users} title="Dependentes e IRPF">
+                         <NumberInput label="Nº de Dependentes (para IRPF)" value={inputs.irpfDependents} onChange={(v) => handleInputChange('irpfDependents', v)} helpText="Reduz a base de cálculo do Imposto de Renda." />
+                    </InputSection>
+
+                    <InputSection icon={Shield} title="Contribuição IAMSPE">
+                        <Select label="Faixa etária do titular" value={inputs.isTitularOver59} onChange={(e) => handleInputChange('isTitularOver59', e.target.value === 'true')} options={[{value: false, label: "Menos de 59 anos"}, {value: true, label: "59 anos ou mais"}]} helpText="A contribuição do titular é obrigatória." />
+                        <ToggleSwitch label="Incluir beneficiários e/ou agregados" enabled={inputs.includeIamspeDependents} setEnabled={(v) => handleInputChange('includeIamspeDependents', v)} helpText="Ative para adicionar outras pessoas ao cálculo." />
+                        {inputs.includeIamspeDependents && (
+                            <div className="space-y-4 mt-4 pt-4 border-t border-gray-700">
+                                <NumberInput label="Beneficiários (< 59 anos)" value={inputs.beneficiariosUnder59} onChange={(v) => handleInputChange('beneficiariosUnder59', v)} />
+                                <NumberInput label="Beneficiários (59+ anos)" value={inputs.beneficiariosOver59} onChange={(v) => handleInputChange('beneficiariosOver59', v)} />
+                                <NumberInput label="Agregados (< 59 anos)" value={inputs.agregadosUnder59} onChange={(v) => handleInputChange('agregadosUnder59', v)} />
+                                <NumberInput label="Agregados (59+ anos)" value={inputs.agregadosOver59} onChange={(v) => handleInputChange('agregadosOver59', v)} />
+                            </div>
+                        )}
+                    </InputSection>
+                    
+                    <InputSection 
+                        icon={Utensils} 
+                        title={
+                            <div className="flex items-center gap-2 relative" onMouseEnter={() => setShowAlimentacaoRulesHelp(true)} onMouseLeave={() => setShowAlimentacaoRulesHelp(false)}>
+                                <span>Ajuda de Custo (Alimentação)</span>
+                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                                {showAlimentacaoRulesHelp && <AlimentacaoRulesTooltip />}
+                            </div>
+                        }
+                    >
+                        <ToggleSwitch label="Calcular Alimentação" enabled={inputs.showAlimentacao} setEnabled={(v) => handleInputChange('showAlimentacao', v)} helpText="Indenização por plantões e serviços."/>
+                        {inputs.showAlimentacao && (
+                            <div className="space-y-4 mt-4 pt-4 border-t border-gray-700">
+                                <NumberInput label="Nº de plantões de 12h ou mais" value={inputs.plantao12h} onChange={(v) => handleInputChange('plantao12h', v)} max={alimentacaoRules.limite12h} helpText={`Limite: ${alimentacaoRules.limite12h}/mês.`} />
+                                <NumberInput label="Nº de plantões de 8h a 12h" value={inputs.plantao8h} onChange={(v) => handleInputChange('plantao8h', v)} max={alimentacaoRules.limite8h} helpText={`Limite: ${alimentacaoRules.limite8h}/mês.`} />
+                            </div>
+                        )}
+                    </InputSection>
+                  </div>
+
+                  {/* --- RESULTS COLUMN --- */}
+                  <div className="bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                        <FileText className="w-8 h-8 text-cyan-400" />
+                        <h2 className="text-2xl font-bold text-center text-cyan-400">Detalhamento da Remuneração</h2>
+                    </div>
+                    <div className="space-y-4 flex-grow">
+                        <div className="p-4 bg-gray-900/50 rounded-lg">
+                            <h3 className="font-semibold text-green-400 mb-2 border-b border-green-400/20 pb-2">Vencimentos Brutos</h3>
+                            <ResultRow label="Salário Base (Padrão)" value={formatCurrency(results.baseSalary)} />
+                            <div className="relative" onMouseEnter={() => setShowRetpHelp(true)} onMouseLeave={() => setShowRetpHelp(false)}>
+                              <ResultRow label={<div className="flex items-center gap-2"><span>RETP (100%)</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={formatCurrency(results.retp)} />
+                              {showRetpHelp && <RetpExplanationTooltip />}
+                            </div>
+                            {inputs.showTemporalBenefits && results.quinquenioValue > 0 && <ResultRow label="Quinquênios" value={formatCurrency(results.quinquenioValue)} />}
+                            {inputs.showTemporalBenefits && results.sextaParteValue > 0 && <ResultRow label="Sexta-Parte" value={formatCurrency(results.sextaParteValue)} />}
+                            {results.adpjValue > 0 && (
+                                <div className="relative" onMouseEnter={() => setShowAdpjHelp(true)} onMouseLeave={() => setShowAdpjHelp(false)}>
+                                    <ResultRow label={<div className="flex items-center gap-2"><span>ADPJ</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={formatCurrency(results.adpjValue)} />
+                                    {showAdpjHelp && <AdpjExplanationTooltip />}
+                                </div>
+                            )}
+                            {results.insalubridadeValue > 0 && (
+                                 <div className="relative" onMouseEnter={() => setShowInsalubridadeValueHelp(true)} onMouseLeave={() => setShowInsalubridadeValueHelp(false)}>
+                                    <ResultRow label={<div className="flex items-center gap-2"><span>{`Adc. Insalubridade (${results.insalubridadeLevel})`}</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={formatCurrency(results.insalubridadeValue)} />
+                                    {showInsalubridadeValueHelp && <InsalubridadeValueTooltip />}
+                                </div>
+                            )}
+                            <ResultRow label="TOTAL BRUTO" value={formatCurrency(results.grossSalary)} isTotal={true} type="positive" />
+                        </div>
+
+                        <div className="p-4 bg-gray-900/50 rounded-lg">
+                            <h3 className="font-semibold text-red-400 mb-2 border-b border-red-400/20 pb-2">Descontos</h3>
+                            <div className="relative" onMouseEnter={() => setShowSpprevHelp(true)} onMouseLeave={() => setShowSpprevHelp(false)}>
+                                <ResultRow label={<div className="flex items-center gap-2"><span>Contribuição SPPREV</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={`-${formatCurrency(results.spprevDiscount)}`} />
+                                {showSpprevHelp && <SpprevExplanationTooltip />}
+                            </div>
+                            <div className="relative" onMouseEnter={() => setShowIamspeHelp(true)} onMouseLeave={() => setShowIamspeHelp(false)}>
+                                <ResultRow label={<div className="flex items-center gap-2"><span>Contribuição IAMSPE</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={`-${formatCurrency(results.iamspeDiscount)}`} helpText={inputs.includeIamspeDependents ? "Cálculo: Titular + Dependentes" : "Cálculo: Apenas Titular"}/>
+                                {showIamspeHelp && <IamspeExplanationTooltip />}
+                            </div>
+                            <div className="relative" onMouseEnter={() => setShowIrpfHelp(true)} onMouseLeave={() => setShowIrpfHelp(false)}>
+                              <ResultRow label={<div className="flex items-center gap-2"><span>Imposto de Renda (IRPF)</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={`-${formatCurrency(results.irpfDiscount)}`} />
+                              {showIrpfHelp && <IrpfExplanationTooltip />}
+                            </div>
+                            <ResultRow label="TOTAL DE DESCONTOS" value={formatCurrency(results.totalDiscounts)} isTotal={true} type="negative" />
+                        </div>
+
+                        {(results.abonoPermanenciaValue > 0 || results.alimentacaoValue > 0) && (
+                            <div className="p-4 bg-gray-900/50 rounded-lg">
+                                <h3 className="font-semibold text-blue-400 mb-2 border-b border-blue-400/20 pb-2">Indenizações</h3>
+                                {results.abonoPermanenciaValue > 0 && <ResultRow label="Abono de Permanência" value={`+${formatCurrency(results.abonoPermanenciaValue)}`} />}
+                                {results.alimentacaoValue > 0 && (
+                                    <div className="relative" onMouseEnter={() => setShowAlimentacaoValuesHelp(true)} onMouseLeave={() => setShowAlimentacaoValuesHelp(false)}>
+                                        <ResultRow label={<div className="flex items-center gap-2"><span>Ajuda de Custo (Alimentação)</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={`+${formatCurrency(results.alimentacaoValue)}`} />
+                                        {showAlimentacaoValuesHelp && <AlimentacaoValuesTooltip />}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="mt-6 p-6 bg-cyan-900/30 rounded-lg text-center ring-1 ring-cyan-500">
+                        <h3 className="text-xl font-semibold text-gray-300 mb-2">Remuneração Líquida Estimada</h3>
+                        <p className="text-4xl lg:text-5xl font-extrabold text-cyan-400 tracking-wider font-mono">{formatCurrency(results.netSalary)}</p>
+                        <p className="text-xs text-gray-400 mt-2">(Total Bruto - Descontos + Indenizações)</p>
+                    </div>
+                    <div className="mt-6 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
+                        <AlertTriangle className="w-4 h-4" />
+                        <p><strong>Aviso:</strong> Esta é uma ferramenta de simulação. Os valores são estimativas e podem variar.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        
+        // --- RENDER THE APP ---
+        ReactDOM.render(<App />, document.getElementById('root'));
+
+    </script>
+</body>
+</html>
