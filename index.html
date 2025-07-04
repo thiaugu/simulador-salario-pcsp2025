@@ -304,6 +304,87 @@
                 </div>
             );
         };
+        const RetpExplanationTooltip = () => {
+            return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Regime Especial de Trabalho Policial (RETP)</h4> <p className="text-gray-400">Lei n.º 10.291, de 26 de novembro de 1968:</p> <blockquote className="border-l-2 border-cyan-500/50 pl-3 text-gray-300 space-y-2"> <p><strong className="text-white">Artigo 1º</strong> - Fica instituído, na Secretaria da Segurança Pública, o Regime Especial de Trabalho Policial...</p> <p><strong className="text-white">Artigo 3º</strong> - ...ficam atribuídas... gratificações na seguinte conformidade:</p> <p className="pl-4"><strong className="text-white">II</strong> - 100% (cem por cento) sobre as respectivas referências de vencimentos...</p> </blockquote> </div> </div>);
+        };
+        const IamspeExplanationTooltip = () => {
+            return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Cálculo da Contribuição IAMSPE</h4> <p>O cálculo é feito sobre a remuneração bruta total, com alíquotas variando por faixa etária (Lei nº 17.293/2020):</p> <ul className="list-none space-y-2 text-gray-400"> <li><strong className="text-white block">Titular:</strong><span className="flex justify-between pl-2"><span>&lt; 59 anos:</span> <span>2%</span></span><span className="flex justify-between pl-2"><span>59+ anos:</span> <span>3%</span></span></li> <li><strong className="text-white block">Beneficiários (cônjuge/filhos):</strong><span className="flex justify-between pl-2"><span>&lt; 59 anos:</span> <span>0,5%</span></span><span className="flex justify-between pl-2"><span>59+ anos:</span> <span>1%</span></span></li> <li><strong className="text-white block">Agregados (pais/padrastos):</strong><span className="flex justify-between pl-2"><span>&lt; 59 anos:</span> <span>2%</span></span><span className="flex justify-between pl-2"><span>59+ anos:</span> <span>3%</span></span></li> </ul> <p>O desconto final é a soma da contribuição do titular com a de cada dependente.</p> </div> </div>);
+        };
+        const SpprevExplanationTooltip = () => {
+            return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Cálculo da Contribuição SPPREV</h4> <p>A contribuição é progressiva sobre o Total Bruto, aplicada em faixas (valores de 2025):</p> <ul className="list-disc list-inside space-y-1 text-gray-400"> <li><strong className="text-white">1ª Faixa:</strong> 11% sobre a parte do salário até R$ 1.518,00.</li> <li><strong className="text-white">2ª Faixa:</strong> 12% sobre a parte de R$ 1.518,01 até R$ 4.022,46.</li> <li><strong className="text-white">3ª Faixa:</strong> 14% sobre a parte de R$ 4.022,47 até R$ 8.157,41.</li> <li><strong className="text-white">4ª Faixa:</strong> 16% sobre a parte que ultrapassa R$ 8.157,41.</li> </ul> <p>O desconto final é a soma dos valores calculados em cada faixa.</p> </div> </div>);
+        };
+        const IrpfExplanationTooltip = () => {
+            return (
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300">
+                    <div className="space-y-3">
+                        <h4 className="font-bold text-sm text-cyan-400">Cálculo do IRPF</h4>
+                        <p>O desconto não incide sobre o salário bruto total, mas sobre uma base de cálculo específica, em 3 etapas:</p>
+                        <div>
+                            <h5 className="font-bold text-white">1. Base de Cálculo</h5>
+                            <p className="font-mono text-center bg-gray-800 p-2 my-1 rounded text-cyan-300 text-[11px]">Total Bruto - SPPREV - IAMSPE - (Dependentes × R$ 189,59)</p>
+                        </div>
+                        <div>
+                            <h5 className="font-bold text-white">2. Tabela Progressiva</h5>
+                            <table className="w-full text-left my-1 text-[10px] sm:text-[11px]">
+                                <thead className="bg-gray-800/70">
+                                    <tr>
+                                        <th className="p-1.5">Base (R$)</th>
+                                        <th className="p-1.5">Alíquota</th>
+                                        <th className="p-1.5">Dedução (R$)</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-gray-900/50">
+                                    <tr>
+                                        <td className="p-1.5">Até 2.428,80</td>
+                                        <td className="p-1.5">Isento</td>
+                                        <td className="p-1.5">0,00</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-1.5">a 2.826,65</td>
+                                        <td className="p-1.5">7,5%</td>
+                                        <td className="p-1.5">182,16</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-1.5">a 3.751,05</td>
+                                        <td className="p-1.5">15%</td>
+                                        <td className="p-1.5">394,16</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-1.5">a 4.664,68</td>
+                                        <td className="p-1.5">22,5%</td>
+                                        <td className="p-1.5">675,49</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="p-1.5">&gt; 4.664,68</td>
+                                        <td className="p-1.5">27,5%</td>
+                                        <td className="p-1.5">908,73</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <h5 className="font-bold text-white">3. Fórmula Final</h5>
+                            <p className="font-mono text-center bg-gray-800 p-2 my-1 rounded text-cyan-300 text-[11px]">(Base de Cálculo × Alíquota) - Parcela a Deduzir</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        const AdpjExplanationTooltip = () => {
+            return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Adicional por Direção da Atividade de Polícia Judiciária (ADPJ)</h4> <p>Gratificação exclusiva para Delegados de Polícia, remunerando a natureza de comando e gestão do cargo.</p> <div> <h5 className="font-bold text-white">Cálculo</h5> <p className="font-mono text-center bg-gray-800 p-2 my-1 rounded text-cyan-300 text-[11px]">(Salário Base + RETP) * 26,5%</p> </div> <p>É uma vantagem específica da carreira, não sendo estendida aos demais cargos.</p> </div> </div>);
+        };
+        const InsalubridadeValueTooltip = () => {
+            return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Valores do Adicional de Insalubridade</h4> <p className="text-gray-400">Fonte: Comunicado Conjunto CAF/CRHE-1, de 01/03/2021.</p> <p>Os valores são fixos, correspondendo ao grau de risco da atividade:</p> <ul className="list-none space-y-1 text-gray-400"> <li className="flex justify-between"><strong className="text-white">Grau Máximo:</strong><span>{formatCurrency(insalubridadeValues["Máximo"])}</span></li> <li className="flex justify-between"><strong className="text-white">Grau Mínimo:</strong><span>{formatCurrency(insalubridadeValues["Mínimo"])}</span></li> </ul> </div> </div>);
+        };
+        const InsalubridadePortariaTooltip = () => {
+            return (<div className="absolute top-full left-0 mt-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <p> Classificação conforme a Portaria DPME 3/2025. <a href="https://doe.sp.gov.br/executivo/secretaria-de-gestao-e-governo-digital/diretoria-de-pericias-medicas-do-estado-de-sao-paulo-portaria-n-03-de-24-de-marco-de-2025-202503241128511214965687" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline ml-1" > Acesse aqui </a> </p> </div>);
+        };
+        const AlimentacaoValuesTooltip = () => {
+            return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Valores da Ajuda de Custo</h4> <p><strong className="text-white">Valor de Referência:</strong> 2,0 × {formatCurrency(constants.ufesp)} (UFESP) = <strong className="text-white">{formatCurrency(alimentacaoRules.valor12h)}</strong></p> <ul className="list-none space-y-1 text-gray-400"> <li className="flex justify-between"><strong className="text-white">Plantão de 12h ou mais:</strong><span>{formatCurrency(alimentacaoRules.valor12h)}</span></li> <li className="flex justify-between"><strong className="text-white">Plantão de 8 a 12h:</strong><span>{formatCurrency(alimentacaoRules.valor8h)}</span></li> </ul> <p>Este é um valor indenizatório, ou seja, não se incorpora ao salário e não sofre descontos de SPPREV ou IRPF.</p> </div> </div>);
+        };
+        const DejecCalculationTooltip = () => {
+            return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Cálculo da DEJEC</h4> <p>O valor é calculado multiplicando o número de diárias por um coeficiente aplicado sobre a UFESP.</p> <div> <h5 className="font-bold text-white">Coeficientes</h5> <ul className="list-none space-y-1 text-gray-400"> <li className="flex justify-between"><span>Delegado de Polícia:</span> <span>{constants.dejecCoefficients.delegado.toFixed(1)}</span></li> <li className="flex justify-between"><span>Demais Carreiras:</span> <span>{constants.dejecCoefficients.outros.toFixed(1)}</span></li> </ul> </div> <p className="font-mono text-center bg-gray-800 p-2 my-1 rounded text-cyan-300 text-[11px]">Nº Diárias × Coeficiente × {formatCurrency(constants.ufesp)}</p> </div> </div>);
+        };
 
         // --- FLOATING BUTTON COMPONENT ---
         const FloatingAuthorButton = () => {
