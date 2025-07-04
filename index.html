@@ -60,7 +60,7 @@
             irpfDeductionPerDependent: 189.59, 
             ufesp: 37.02,
             dejecCoefficients: { delegado: 9.6, outros: 8.0 },
-            inssCeiling: 7786.02,
+            inssCeiling: 8157.41,
         };
         const proLaboreData = {
             operacionais: {
@@ -518,7 +518,7 @@
             }
             
             const netSalary = grossSalary - totalDiscounts + abonoPermanenciaValue + alimentacaoValue + dejecValue + gatValue;
-            return { baseSalary, retp, proLaboreValue, proLaboreBase, proLaborePercent, quinquenioValue, sextaParteValue, adpjValue, insalubridadeValue, insalubridadeLevel, grossSalary, spprevDiscount, prevcomDiscount, irpfDiscount, iamspeDiscount, totalDiscounts, abonoPermanenciaValue, alimentacaoValue, dejecValue, gatValue, netSalary };
+            return { baseSalary, retp, proLaboreValue, proLaboreBase, proLaborePercent, quinquenioValue, sextaParteValue, adpjValue, insalubridadeValue, insalubridadeLevel, grossSalary, spprevBase, spprevDiscount, prevcomDiscount, irpfDiscount, iamspeDiscount, totalDiscounts, abonoPermanenciaValue, alimentacaoValue, dejecValue, gatValue, netSalary };
           }, [inputs]);
 
           return (
@@ -753,7 +753,12 @@
 
                         <div className="p-4 bg-gray-900/50 rounded-lg">
                             <h3 className="font-semibold text-red-400 mb-2 border-b border-red-400/20 pb-2">Descontos</h3>
-                            <div className="relative" onMouseEnter={() => toggleTooltip('spprev')} onMouseLeave={() => toggleTooltip('spprev')}> <ResultRow label={<div className="flex items-center gap-2"><span>Contribuição SPPREV</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={`-${formatCurrency(results.spprevDiscount)}`} /> {showTooltips.spprev && <SpprevExplanationTooltip />} </div>
+                            <div className="relative" onMouseEnter={() => toggleTooltip('spprev')} onMouseLeave={() => toggleTooltip('spprev')}>
+                                <ResultRow label={<div className="flex items-center gap-2"><span>Contribuição SPPREV</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={`-${formatCurrency(results.spprevDiscount)}`}>
+                                     <ResultSubRow label="Base de Cálculo" value={formatCurrency(results.spprevBase)} />
+                                </ResultRow>
+                                {showTooltips.spprev && <SpprevExplanationTooltip />}
+                            </div>
                             
                             {results.prevcomDiscount > 0 && (
                                 <ResultRow label="Contribuição SP-PREVCOM" value={`-${formatCurrency(results.prevcomDiscount)}`}>
@@ -818,7 +823,7 @@
                     <br />
                     Os valores são estimativas e podem variar.
                     <br />
-                    v. 1.1 // Última atualização: 04/07/2025 </p> </div>
+                    v. 1.2 // Última atualização: 04/07/2025 </p> </div>
                   </div>
                 </div>
                 <FloatingAuthorButton />
