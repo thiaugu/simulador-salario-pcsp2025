@@ -214,10 +214,12 @@
                 </div>
             );
         };
-        const ProLaboreCalculationTooltip = ({ base, percent, careerType }) => {
-            let baseLabel = "do Cargo";
+        // [CORREÇÃO] O componente do Tooltip foi ajustado para receber a classe selecionada
+        const ProLaboreCalculationTooltip = ({ base, percent, careerType, selectedClass }) => {
+            // [CORREÇÃO] A lógica para definir o texto da base de cálculo foi ajustada
+            let baseLabel = "do Servidor";
             if (careerType === 'operacionais' || careerType === 'delegados') {
-                baseLabel = "Classe Especial";
+                 baseLabel = `da ${selectedClass}`;
             }
 
             return (
@@ -312,6 +314,9 @@
         const InsalubridadeValueTooltip = () => {
             return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Valores do Adicional de Insalubridade</h4> <p className="text-gray-400">Fonte: Comunicado Conjunto CAF/CRHE-1, de 01/03/2021.</p> <p>Os valores são fixos, correspondendo ao grau de risco da atividade:</p> <ul className="list-none space-y-1 text-gray-400"> <li className="flex justify-between"><strong className="text-white">Grau Máximo:</strong><span>{formatCurrency(insalubridadeValues["Máximo"])}</span></li> <li className="flex justify-between"><strong className="text-white">Grau Mínimo:</strong><span>{formatCurrency(insalubridadeValues["Mínimo"])}</span></li> </ul> </div> </div>);
         };
+        const InsalubridadePortariaTooltip = () => {
+            return (<div className="absolute top-full left-0 mt-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <p> Classificação conforme a Portaria DPME 3/2025. <a href="https://doe.sp.gov.br/executivo/secretaria-de-gestao-e-governo-digital/diretoria-de-pericias-medicas-do-estado-de-sao-paulo-portaria-n-03-de-24-de-marco-de-2025-202503241128511214965687" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline ml-1" > Acesse aqui </a> </p> </div>);
+        };
         const AlimentacaoValuesTooltip = () => {
             return (<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-xs p-4 bg-gray-950 border border-cyan-700/50 rounded-lg shadow-xl z-10 text-xs text-gray-300"> <div className="space-y-3"> <h4 className="font-bold text-sm text-cyan-400">Valores da Ajuda de Custo</h4> <p><strong className="text-white">Valor de Referência:</strong> 2,0 × {formatCurrency(constants.ufesp)} (UFESP) = <strong className="text-white">{formatCurrency(alimentacaoRules.valor12h)}</strong></p> <ul className="list-none space-y-1 text-gray-400"> <li className="flex justify-between"><strong className="text-white">Plantão de 12h ou mais:</strong><span>{formatCurrency(alimentacaoRules.valor12h)}</span></li> <li className="flex justify-between"><strong className="text-white">Plantão de 8 a 12h:</strong><span>{formatCurrency(alimentacaoRules.valor8h)}</span></li> </ul> <p>Este é um valor indenizatório, ou seja, não se incorpora ao salário e não sofre descontos de SPPREV ou IRPF.</p> </div> </div>);
         };
@@ -389,11 +394,11 @@
             if (inputs.showProLabore && proLaboreCareerType && inputs.proLaboreFunction !== 'none') {
                 const functions = proLaboreData[proLaboreCareerType];
                 proLaborePercent = functions[inputs.proLaboreFunction];
-                if (proLaboreCareerType === 'operacionais' || proLaboreCareerType === 'delegados') {
-                    proLaboreBase = salaryData[inputs.selectedCareer]['Classe Especial'];
-                } else { // peritos
-                    proLaboreBase = baseSalary;
-                }
+                
+                // [CORREÇÃO] A base de cálculo do Pro Labore foi ajustada.
+                // Agora, todas as carreiras usam o salário base da classe selecionada como referência.
+                proLaboreBase = baseSalary;
+
                 proLaboreValue = proLaboreBase * proLaborePercent;
             }
 
@@ -611,7 +616,8 @@
                                     <ResultRow label={<div className="flex items-center gap-2"><span>Gratificação Pro Labore</span><HelpCircle className="w-4 h-4 text-gray-400 cursor-help" /></div>} value={formatCurrency(results.proLaboreValue)}>
                                         <ResultSubRow label="Função" value={inputs.proLaboreFunction} />
                                     </ResultRow>
-                                    {showTooltips.proLaboreCalculation && <ProLaboreCalculationTooltip base={results.proLaboreBase} percent={results.proLaborePercent} careerType={proLaboreCareerType} />}
+                                    {/* [CORREÇÃO] Passando a classe selecionada para o tooltip */}
+                                    {showTooltips.proLaboreCalculation && <ProLaboreCalculationTooltip base={results.proLaboreBase} percent={results.proLaborePercent} careerType={proLaboreCareerType} selectedClass={inputs.selectedClass} />}
                                 </div>
                             )}
                             {inputs.showTemporalBenefits && inputs.quinquenios > 0 && (
